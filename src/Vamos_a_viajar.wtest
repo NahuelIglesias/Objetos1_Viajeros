@@ -1,0 +1,34 @@
+import viajes.*
+import viajeros.*
+
+describe "vamos a viajar" {
+	var pepe
+	var maria
+	var toffalo
+	var pepita
+	
+	var viajeEstadosUnidos
+	
+	fixture {
+		pepe = new Establecido()
+		pepe.viveEn("Argentina")
+		
+		maria = new Migrante()
+		maria.nacioEn("Chile")
+		maria.migroA("Uruguay", 2016)
+		
+		toffalo = new Doctor()
+		toffalo.viveEn("Argentina")
+		toffalo.vaAEstudiar("Gran Bretaña", 2000, 2007)
+		
+		pepita = new Menor()
+		pepita.esHijoDe(maria)
+		
+		viajeEstadosUnidos = new Viaje(pais = "Estados Unidos", anio = 2019)
+	}
+	
+	test "Pepe viaja a Estados Unidos" {
+		pepe.viajoA(viajeEstadosUnidos)
+		assert.equals(#{"Argentina", "Estados Unidos"}, pepe.enQuePaisesEstuvo(2019))
+	}
+}

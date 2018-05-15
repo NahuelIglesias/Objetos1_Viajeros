@@ -1,7 +1,7 @@
 import viajes.*
 
-class Persona {
-	var viajes = []
+class Viajero {
+	var viajes = #{}
 	
 	method viajes() {
 		return viajes
@@ -11,48 +11,94 @@ class Persona {
 		viajes.add(viaje)
 	}
 	
-	method paisesDeResidencia(anio)
+//	method enQuePaisesEstuvo(anioX) {
+//		var viajesEnAnioX = viajes
+//		
+//		viajesEnAnioX.filter({viaje => viaje.anio() == anioX})
+//		viajesEnAnioX.map({viaje => viaje.pais()})
+//		
+//		return viajesEnAnioX.addAll(self.paisesDeResidencia(anioX))
+//	}
+
+	method enQuePaisesEstuvo(anio) { // MOD template method
+		return self.paisesDeResidencia(anio) + self.paisesDeTurista(anio)
+	}
 	
-	method enQuePaisesEstuvo(anioX) {
-		var viajesEnAnioX = viajes
-		
-		viajesEnAnioX.filter({viaje => viaje.anio() == anioX})
-		viajesEnAnioX.map({viaje => viaje.pais()})
-		viajesEnAnioX.asSet()
-		
-		return viajesEnAnioX.addAll(self.paisesDeResidencia(anioX))
+	method paisesDeResidencia(anioX)
+	method paisesDeTurista(anioX) {
+		return viajes
+			.filter({viaje => viaje.anio() == anioX})
+			.map({viaje => viaje.pais()})
+			.asSet()
 	}
 }
 
-class Establecido inherits Persona {
-	var property paisResidencia = "Argentina"
+//------Tipos de viajeros------
+class Establecido inherits Viajero {
+	var paisResidencia = "Argentina"
 	
-	override method paisesDeResidencia(anio) {
+	method viveEn(pais) {
+		paisResidencia = pais
+	}
+	
+	override method paisesDeResidencia(anioX) {
 		return #{paisResidencia}
 	}
 }
 
-class Migrante inherits Persona {
-	var property paisDeNacimiento = "Argentina"
-	var property paisDeInmigracion = "Chile"
-	var property anioDeInmigracion = 2018
+
+class Migrante inherits Viajero {
+	var paisNacimiento = "Argentina"
+	var paisInmigracion = "Chile"
+	var anioInmigracion = 2018
 	
-	override method paisesDeResidencia(anio) {
-		return if (anio > anioDeInmigracion) {
-			#{paisDeNacimiento}
-		} else if (anio == anioDeInmigracion) {
-			#{paisDeNacimiento, paisDeInmigracion}
+	method nacioEn(pais) {
+		paisNacimiento = pais
+	}
+	
+	method migroA(pais, anio) {
+		paisInmigracion = pais
+		anioInmigracion = anio
+	}
+	
+	override method paisesDeResidencia(anioX) {
+		return if (anioX > anioInmigracion) {
+			#{paisNacimiento}
+		} else if (anioX == anioInmigracion) {
+			#{paisNacimiento, paisInmigracion}
 		} else {
-			#{paisDeInmigracion}
+			#{paisInmigracion}
 		}
 	}
 }
-class Doctor inherits Persona {
-	var property paisDeResidencia = "Argentina"
-	var property paisDeEstudios = "Chile"
-	var property aniosDeEstudio = []
+
+
+class Doctor inherits Viajero {
+	var paisResidencia = "Argentina"
+	var paisEstudios = "Chile"
+	var anioInicioEstudios = 2014
+	var anioFinalEstudios = 2018
 	
-	override method enQuePaisesEstuvo(anio){
+	method viveEn(pais) {
+		paisResidencia = pais
+	}
+	method vaAEstudiar(pais, anioInicio, anioFin) {
+		paisEstudios = pais
+		anioInicioEstudios = anioInicio
+		anioFinalEstudios = anioFin
+	}
+	
+	override method paisesDeResidencia(anioX) {
+		return if (anioX < anioInicioEstudios or anioX > anioFinalEstudios) {
+			#{paisResidencia}
+		} else if (anioX == anioInicioEstudios) {
+			#{paisResidencia, paisEstudios}
+		} else {
+			#{paisEstudios}
+		}
+	}
+/*
+ 	override method enQuePaisesEstuvo(anio){
 		return if(anio.contains(aniosDeEstudio)){
 				self.entreAnios(anio, aniosDeEstudio, paisDeResidencia, paisDeEstudios)
 			} else {paisDeResidencia}
@@ -62,5 +108,18 @@ class Doctor inherits Persona {
 		return if ((anioX == anios.first()) or (anioX == anios.last()) ){
 				#{paisResidencia, paisEstudios}
 			} else { paisEstudios }
+	}
+*/
+}
+
+class Menor inherits Viajero {
+	var madre = madreX
+	
+	method esHijoDe(persona) {
+		madre = persona
+	}
+	
+	override method paisesDeResidencia(anioX) {
+		return madre.paisesDeResidencia(anioX)
 	}
 }
