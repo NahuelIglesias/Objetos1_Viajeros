@@ -1,49 +1,57 @@
+import viajes.*
+
 class Persona {
-//	var viajes = []
+	var viajes = []
 	
-//	method viajes() {
-//		return viajes
-//	}
+	method viajes() {
+		return viajes
+	}
 	
-//	method viajoA(viaje) {
-//		viajes.add(viaje)
-//	}
+	method viajoA(viaje) {
+		viajes.add(viaje)
+	}
 	
-	method enQuePaisesEstuvo(anioX) //{
-//		var viajesEnAnioX = viajes.filter({viaje => viaje.anio() == anioX})
-//		return viajesEnAnioX.map({viaje => viaje.pais()})
-//	}
+	method enQuePaisesEstuvo(anioX) {
+		var viajesEnAnioX = viajes.filter({viaje => viaje.anio() == anioX})
+		return viajesEnAnioX.map({viaje => viaje.pais()})
+	}
 }
 
 class Establecido inherits Persona {
-	var property pais = "unPais"
+	var property paisResidencia = argentina
 	
 	override method enQuePaisesEstuvo(anio) {
-		return pais
+		return super(anio).add(paisResidencia)
 	}
 }
 
 class Migrante inherits Persona {
-	var property paisDeNacimiento = "paisDeNacimiento" 
-	var property paisAlMudarse = "paisAlMudarse"
-	var property anioDeMudanza = 0
+	var property paisDeNacimiento = argentina 
+	var property paisDeInmigracion = chile
+	var property anioDeInmigracion = 2018
 	
 	override method enQuePaisesEstuvo(anio){
-		return 	if (anio > anioDeMudanza){
-					paisDeNacimiento
-				} else if (anio == anioDeMudanza){
-					#{paisDeNacimiento, paisAlMudarse}
-				} else {paisAlMudarse}
+		return super(anio).addAll(self.deNacimientoOrInmigracion(anio))
+	}
+	
+	method deNacimientoOrInmigracion(anio) {
+		return if (anio > anioDeInmigracion) {
+			#{paisDeNacimiento}
+		} else if (anio == anioDeInmigracion) {
+			#{paisDeNacimiento, paisDeInmigracion}
+		} else {
+			#{paisDeInmigracion}
+		}
 	}
 }
 class Doctor inherits Persona {
 	var property paisDondeVive = "unPaisDondeVive"
 	var property paisDondeEstudio = "UnPaisDondeEstudio"
-	var property anioDeEstudio = []
+	var property aniosDeEstudio = []
 	
 	override method enQuePaisesEstuvo(anio){
-		return if(anio.contains(anioDeEstudio)){
-				self.comparacionDeAnios(anio, anioDeEstudio, paisDondeEstudio, paisDondeVive)
+		return if(anio.contains(aniosDeEstudio)){
+				self.comparacionDeAnios(anio, aniosDeEstudio, paisDondeEstudio, paisDondeVive)
 			} else {paisDondeVive}
 	}
 	
