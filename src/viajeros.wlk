@@ -11,30 +11,33 @@ class Persona {
 		viajes.add(viaje)
 	}
 	
+	method paisesDeResidencia(anio)
+	
 	method enQuePaisesEstuvo(anioX) {
-		var viajesEnAnioX = viajes.filter({viaje => viaje.anio() == anioX})
-		return viajesEnAnioX.map({viaje => viaje.pais()})
+		var viajesEnAnioX = viajes
+		
+		viajesEnAnioX.filter({viaje => viaje.anio() == anioX})
+		viajesEnAnioX.map({viaje => viaje.pais()})
+		viajesEnAnioX.asSet()
+		
+		return viajesEnAnioX.addAll(self.paisesDeResidencia(anioX))
 	}
 }
 
 class Establecido inherits Persona {
-	var property paisResidencia = argentina
+	var property paisResidencia = "Argentina"
 	
-	override method enQuePaisesEstuvo(anio) {
-		return super(anio).add(paisResidencia)
+	override method paisesDeResidencia(anio) {
+		return #{paisResidencia}
 	}
 }
 
 class Migrante inherits Persona {
-	var property paisDeNacimiento = argentina 
-	var property paisDeInmigracion = chile
+	var property paisDeNacimiento = "Argentina"
+	var property paisDeInmigracion = "Chile"
 	var property anioDeInmigracion = 2018
 	
-	override method enQuePaisesEstuvo(anio){
-		return super(anio).addAll(self.deNacimientoOrInmigracion(anio))
-	}
-	
-	method deNacimientoOrInmigracion(anio) {
+	override method paisesDeResidencia(anio) {
 		return if (anio > anioDeInmigracion) {
 			#{paisDeNacimiento}
 		} else if (anio == anioDeInmigracion) {
@@ -45,19 +48,19 @@ class Migrante inherits Persona {
 	}
 }
 class Doctor inherits Persona {
-	var property paisDondeVive = "unPaisDondeVive"
-	var property paisDondeEstudio = "UnPaisDondeEstudio"
+	var property paisDeResidencia = "Argentina"
+	var property paisDeEstudios = "Chile"
 	var property aniosDeEstudio = []
 	
 	override method enQuePaisesEstuvo(anio){
 		return if(anio.contains(aniosDeEstudio)){
-				self.comparacionDeAnios(anio, aniosDeEstudio, paisDondeEstudio, paisDondeVive)
-			} else {paisDondeVive}
+				self.entreAnios(anio, aniosDeEstudio, paisDeResidencia, paisDeEstudios)
+			} else {paisDeResidencia}
 	}
 	
-	method comparacionDeAnios(anio, anioEst, paisEst, paisVive){
-		return if ((anio == anioEst.first()) or (anio == anioEst.last()) ){
-				#{paisEst, paisVive}
-			} else { paisEst }
+	method entreAnios(anioX, anios, paisResidencia, paisEstudios){
+		return if ((anioX == anios.first()) or (anioX == anios.last()) ){
+				#{paisResidencia, paisEstudios}
+			} else { paisEstudios }
 	}
 }
